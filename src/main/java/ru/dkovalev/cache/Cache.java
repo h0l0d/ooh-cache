@@ -1,8 +1,8 @@
-package ru.dkovalev;
+package ru.dkovalev.cache;
 
 import java.util.concurrent.TimeUnit;
 
-public interface Cache<K, V> {
+public interface Cache<K, V> extends AutoCloseable {
 
     /**
      * Puts new element, returns old value or null
@@ -10,6 +10,9 @@ public interface Cache<K, V> {
      */
     V put(K k, V v);
 
+    /**
+     * Puts new element with given TTL, returns old value or null
+     */
     V put(K k, V v, TimeUnit timeUnit, long ttl);
 
     /**
@@ -17,12 +20,9 @@ public interface Cache<K, V> {
      */
     V get(K k);
 
-
     /**
-     * Cleans whole cache
+     * Number of elements in the cache.
      */
-    void clear();
-
     long size();
 
 }

@@ -1,4 +1,4 @@
-package ru.dkovalev.util;
+package ru.dkovalev.cache.util;
 
 import sun.misc.Unsafe;
 
@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
+@SuppressWarnings("rawtypes")
 public class UnsafeUtils {
 
     private static final Unsafe unsafe;
@@ -31,7 +32,7 @@ public class UnsafeUtils {
 
     public static Method getMethod(Class cls, String name, Class... params) {
         try {
-            Method m = cls.getDeclaredMethod(name, params);
+            @SuppressWarnings("unchecked") Method m = cls.getDeclaredMethod(name, params);
             m.setAccessible(true);
             return m;
         } catch (Exception e) {

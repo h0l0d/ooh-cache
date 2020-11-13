@@ -1,4 +1,4 @@
-package ru.dkovalev.util;
+package ru.dkovalev.cache.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,11 +38,11 @@ public class SerializationUtils {
     }
 
     public static <T> T deserialize(byte[] objectData) {
-        return SerializationUtils.<T>deserialize(new ByteArrayInputStream(objectData));
+        return SerializationUtils.deserialize(new ByteArrayInputStream(objectData));
     }
 
     public static <T> T deserialize(byte[] objectData, int offset, int length) {
-        return SerializationUtils.<T>deserialize(new ByteArrayInputStream(objectData, offset, length));
+        return SerializationUtils.deserialize(new ByteArrayInputStream(objectData, offset, length));
     }
 
 }

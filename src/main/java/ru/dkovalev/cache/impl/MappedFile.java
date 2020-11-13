@@ -1,27 +1,33 @@
-package ru.dkovalev;
+package ru.dkovalev.cache.impl;
 
-import ru.dkovalev.util.UnsafeUtils;
+import ru.dkovalev.cache.util.UnsafeUtils;
 import sun.misc.Unsafe;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.io.UncheckedIOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 
-public class MappedFile {
+public class MappedFile implements AutoCloseable {
 
     private static final Unsafe unsafe = UnsafeUtils.getUnsafe();
 
-    private MappedByteBuffer buffer;
+    private final File file;
+    private final RandomAccessFile raFile;
+    private final MappedByteBuffer buffer;
 
-    public MappedFile(String name, long size) throws IOException {
-        RandomAccessFile f = new RandomAccessFile(name, "rw");
-        f.setLength(size);
+    public MappedFile(File file, long size) throws IOException {
+        this.file = file;
+        this.raFile = new RandomAccessFile(file, "rw");
+        raFile.setLength(size);
 
-        buffer = f.getChannel().map(FileChannel.MapMode.READ_WRITE, 0, f.length());
+        this.buffer = raFile.getChannel().map(FileChannel.MapMode.READ_WRITE, 0, raFile.length());
     }
 
-    public void clear() {
+    private void clear() {
         ((sun.nio.ch.DirectBuffer) buffer).cleaner().clean();
     }
 
@@ -49,4 +55,15 @@ public class MappedFile {
                 length);
     }
 
+
+    @Override
+    public void close() {
+        clear();
+        try {
+            raFile.close();
+            Files.deleteIfExists(file.toPath());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
 }
